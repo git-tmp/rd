@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hbb/consts.dart';
@@ -484,7 +485,19 @@ class ServerModel with ChangeNotifier {
   }
 
   fetchLocalIP() async {
-    final ip = await bind.mainGetLocalIp();
+    String ip = "127.0.0.1";
+    try {
+      final interfaces = await NetworkInterface.list();
+      for (final iface in interfaces) {
+        for (final addr in iface.addresses) {
+          if (addr.type == InternetAddressType.IPv4 && !addr.isLoopback) {
+            ip = addr.address;
+            break;
+          }
+        }
+        if (ip != "127.0.0.1") break;
+      }
+    } catch (_) {}
     if (ip != _localIp.id) {
       _localIp.id = ip;
       notifyListeners();

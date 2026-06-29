@@ -4,7 +4,7 @@ use crate::keyboard::input_source::{change_input_source, get_cur_session_input_s
 use crate::platform::linux::is_x11;
 use crate::{
     client::file_trait::FileManager,
-    common::{get_local_ip_address, make_fd_to_json, make_vec_fd_to_json},
+    common::{make_fd_to_json, make_vec_fd_to_json},
     flutter::{
         self, session_add, session_add_existed, session_start_, sessions, try_sync_peer_option,
     },
@@ -28,7 +28,6 @@ use std::{
         atomic::{AtomicI32, Ordering},
         Arc,
     },
-    time::{Duration, SystemTime},
 };
 
 pub type SessionID = uuid::Uuid;
@@ -1351,10 +1350,6 @@ pub fn main_clip_cursor(
 
 pub fn main_get_my_id() -> String {
     get_id()
-}
-
-pub fn main_get_local_ip() -> String {
-    get_local_ip_address()
 }
 
 pub fn main_get_uuid() -> String {

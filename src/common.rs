@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     future::Future,
-    net::{IpAddr, SocketAddr, ToSocketAddrs},
+    net::{SocketAddr, ToSocketAddrs},
     sync::{Arc, Mutex, RwLock},
     task::Poll,
 };
@@ -1103,18 +1103,6 @@ pub fn get_ipv6_punch_enabled() -> bool {
         &get_local_option(keys::OPTION_ENABLE_IPV6_PUNCH),
     )
 }
-
-pub fn get_local_ip_address() -> String {
-    for interface in default_net::get_interfaces() {
-        for ipv4 in interface.ipv4 {
-            if !ipv4.addr.is_loopback() {
-                return ipv4.addr.to_string();
-            }
-        }
-    }
-    IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1)).to_string()
-}
-
 pub fn get_local_option(key: &str) -> String {
     let v = LocalConfig::get_option(key);
     if key == keys::OPTION_ENABLE_UDP_PUNCH || key == keys::OPTION_ENABLE_IPV6_PUNCH {

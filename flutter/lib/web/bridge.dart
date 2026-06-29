@@ -952,10 +952,6 @@ class RustdeskImpl {
     return Future(() => js.context.callMethod('getByName', ['my_id']));
   }
 
-  Future<String> mainGetLocalIp({dynamic hint}) {
-    return Future(() => js.context.callMethod('getByName', ['local_ip']));
-  }
-
   Future<String> mainGetUuid({dynamic hint}) {
     return Future(() => js.context.callMethod('getByName', ['uuid']));
   }
