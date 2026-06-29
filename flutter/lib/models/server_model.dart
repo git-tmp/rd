@@ -41,6 +41,7 @@ class ServerModel with ChangeNotifier {
 
   late String _emptyIdShow;
   late final IDTextEditingController _serverId;
+  late final IDTextEditingController _localIp;
   final _serverPasswd =
       TextEditingController(text: translate("Generating ..."));
 
@@ -122,6 +123,8 @@ class ServerModel with ChangeNotifier {
 
   TextEditingController get serverId => _serverId;
 
+  TextEditingController get localIp => _localIp;
+
   TextEditingController get serverPasswd => _serverPasswd;
 
   List<Client> get clients => _clients;
@@ -133,6 +136,7 @@ class ServerModel with ChangeNotifier {
   ServerModel(this.parent) {
     _emptyIdShow = translate("Generating ...");
     _serverId = IDTextEditingController(text: _emptyIdShow);
+    _localIp = IDTextEditingController(text: _emptyIdShow);
 
     /*
     // initital _hideCm at startup
@@ -475,6 +479,14 @@ class ServerModel with ChangeNotifier {
     final id = await bind.mainGetMyId();
     if (id != _serverId.id) {
       _serverId.id = id;
+      notifyListeners();
+    }
+  }
+
+  fetchLocalIP() async {
+    final ip = await bind.mainGetLocalIp();
+    if (ip != _localIp.id) {
+      _localIp.id = ip;
       notifyListeners();
     }
   }

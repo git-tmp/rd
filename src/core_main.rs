@@ -140,7 +140,7 @@ pub fn core_main() -> Option<Vec<String>> {
     {
         _is_quick_support |= !crate::platform::is_installed()
             && args.is_empty()
-            && (true
+            && (is_quick_support_exe(&arg_exe)
                 || config::LocalConfig::get_option("pre-elevate-service") == "Y"
                 || (!click_setup && crate::platform::is_elevated(None).unwrap_or(false)));
         crate::portable_service::client::set_quick_support(_is_quick_support);
@@ -169,9 +169,9 @@ pub fn core_main() -> Option<Vec<String>> {
     #[cfg(windows)]
     if !crate::platform::is_installed()
         && args.is_empty()
-        && _is_quick_support
         && !_is_elevate
         && !_is_run_as_system
+        && !crate::platform::is_elevated(None).unwrap_or(false)
     {
         use crate::portable_service::client;
         if let Err(e) = client::start_portable_service(client::StartPara::Direct) {

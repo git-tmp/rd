@@ -221,7 +221,7 @@ isSosMode
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          translate("ID"),
+                          translate("IP Address"),
                           style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context)
@@ -237,15 +237,12 @@ isSosMode
                   Flexible(
                     child: GestureDetector(
                       onDoubleTap: () {
-                        Clipboard.setData(ClipboardData(
-                            text: bind.mainGetOptionSync(
-                                key: 'local-ip-addr')));
+                        Clipboard.setData(
+                            ClipboardData(text: model.localIp.text));
                         showToast(translate("Copied"));
                       },
                       child: TextFormField(
-                        controller: TextEditingController(
-                            text: bind.mainGetOptionSync(
-                                key: 'local-ip-addr')),
+                        controller: model.localIp,
                         readOnly: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -256,7 +253,7 @@ isSosMode
                         ),
                       ).workaroundFreezeLinuxMint(),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -711,6 +708,7 @@ isSosMode
     super.initState();
     _updateTimer = periodic_immediate(const Duration(seconds: 1), () async {
       await gFFI.serverModel.fetchID();
+      await gFFI.serverModel.fetchLocalIP();
       final error = await bind.mainGetError();
       if (systemError != error) {
         systemError = error;

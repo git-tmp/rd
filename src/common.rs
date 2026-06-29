@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     future::Future,
-    net::{SocketAddr, ToSocketAddrs},
+    net::{IpAddr, SocketAddr, ToSocketAddrs},
     sync::{Arc, Mutex, RwLock},
     task::Poll,
 };
@@ -1104,6 +1104,17 @@ pub fn get_ipv6_punch_enabled() -> bool {
     )
 }
 
+pub fn get_local_ip_address() -> String {
+    for interface in default_net::get_interfaces() {
+        for ipv4 in interface.ipv4 {
+            if !ipv4.addr.is_loopback() {
+                return ipv4.addr.to_string();
+            }
+        }
+    }
+    IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1)).to_string()
+}
+
 pub fn get_local_option(key: &str) -> String {
     let v = LocalConfig::get_option(key);
     if key == keys::OPTION_ENABLE_UDP_PUNCH || key == keys::OPTION_ENABLE_IPV6_PUNCH {
@@ -2111,6 +2122,18 @@ pub fn load_custom_client() {
             let mut buildin = config::BUILTIN_SETTINGS.write().unwrap();
             buildin.insert("sos-mode".to_string(), "Y".to_string());
         }
+        {
+            let mut defaults = config::DEFAULT_SETTINGS.write().unwrap();
+            defaults
+                .entry(config::keys::OPTION_DIRECT_SERVER.to_string())
+                .or_insert("Y".to_string());
+        }
+        {
+            let mut defaults = config::DEFAULT_SETTINGS.write().unwrap();
+            defaults
+                .entry(config::keys::OPTION_WHITELIST.to_string())
+                .or_insert("192.168.0.0/16,10.0.0.0/8,172.16.0.0/12".to_string());
+        }
         return;
     }
     let Some(path) = std::env::current_exe().map_or(None, |x| x.parent().map(|x| x.to_path_buf()))
@@ -2149,14 +2172,12 @@ pub fn load_custom_client() {
             .entry("allow-hide-cm".to_string())
             .or_insert("Y".to_string());
     }
-    // Enable direct IP access by default
     {
         let mut defaults = config::DEFAULT_SETTINGS.write().unwrap();
         defaults
             .entry(config::keys::OPTION_DIRECT_SERVER.to_string())
             .or_insert("Y".to_string());
     }
-    // Restrict access to local network segments only by default
     {
         let mut defaults = config::DEFAULT_SETTINGS.write().unwrap();
         defaults
